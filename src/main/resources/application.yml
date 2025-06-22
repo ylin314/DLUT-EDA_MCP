@@ -22,21 +22,9 @@ spring:
       timeout: 5000
       username: ${REDIS_USERNAME}
 
-redisson:
-  config: |
-    singleServerConfig:
-      address: "redis://root:7539518426@192.168.124.4:6379"
-      password: "7539518426"
-      timeout: 5000
-      connectionPoolSize: 64
-      connectionMinimumIdleSize: 10
-    threads: 16
-    nettyThreads: 32
-
-
-#logging:
-#  pattern:
-#    console:
+logging:
+  pattern:
+    console:
 
 mybatis:
   mapper-locations: classpath:mapper/*.xml # 指定SQL映射文件的位置
