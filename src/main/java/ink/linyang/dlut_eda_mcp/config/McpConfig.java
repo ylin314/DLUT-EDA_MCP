@@ -24,21 +24,18 @@ public class McpConfig {
 
     @Bean
     public RouterFunction<ServerResponse> mvcMcpRouterFunction(WebMvcSseServerTransport transport) {
-        return transport.getRouterFunction().filter(new HandlerFilterFunction<ServerResponse, ServerResponse>() {
-            @Override
-            public ServerResponse filter(ServerRequest request, HandlerFunction<ServerResponse> next) throws Exception {
-                String path = request.path();
-                if ("/sse".equals(path)) {
-                    Optional<String> key = request.param("key");
-                    if (key.isPresent()) {
-                        if (apiKeyUtil.isValidApiKey(key.get())) {
-                            return next.handle(request);
-                        }
+        return transport.getRouterFunction().filter((request, next) -> {
+            String path = request.path();
+            if ("/sse".equals(path)) {
+                Optional<String> key = request.param("key");
+                if (key.isPresent()) {
+                    if (apiKeyUtil.isValidApiKey(key.get())) {
+                        return next.handle(request);
                     }
-                    return ServerResponse.status(HttpStatus.HTTP_FORBIDDEN).build();
                 }
-                return next.handle(request);
+                return ServerResponse.status(HttpStatus.HTTP_FORBIDDEN).build();
             }
+            return next.handle(request);
         });
     }
 }
