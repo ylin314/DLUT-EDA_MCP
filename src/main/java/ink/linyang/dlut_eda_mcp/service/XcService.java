@@ -48,14 +48,14 @@ public class XcService {
         return courseList;
     }
 
-    @Tool(description = "刷新形势与政策开课通知清单，更新开课清单，重新爬取开课清单")
-    public void refreshXcCourses() {
+    @Tool(description = "刷新形势与政策开课通知清单，更新开课清单，重新爬取开课清单，返回结果是重新爬取的到课程数量，如果返回0则表示爬取失败")
+    public int refreshXcCourses() {
         // 重新爬取
-        spiderTask.XcTask();
+        return spiderTask.XcTask();
     }
 
-    @Tool(description = "获取服务器状态")
+    @Tool(description = "获取 MCP 服务器状态")
     public String getServerStatus() {
-        return "OK";
+        return "服务器正在正常运行。当前时间：" + LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy年MM月dd日"));
     }
 }

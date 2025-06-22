@@ -31,20 +31,22 @@ public class SpiderTask {
     }
 
     @Scheduled(cron = "0 0 * * * ?")
-    public void XcTask() {
+    public int XcTask() {
         logger.info("开始执行形策开课清单爬虫任务...");
         try {
             List<XcCourse> xcCourses = spiderFeign.getXcCourses();
             if (xcCourses == null || xcCourses.isEmpty()) {
                 logger.error("获取形策开课清单失败！请检查爬虫服务是否正常运行");
+                return 0;
             } else {
                 logger.info("获取形策开课清单成功，数量: {}", xcCourses.size());
                 xcCourseMapper.insertXcCourses(xcCourses);
                 redisUtil.delete(RedisUtil.XC_COURSE_LIST_PREFIX);
+                return xcCourses.size();
             }
         } catch (Exception e) {
             logger.error("形策开课清单爬虫任务执行失败: {}", e.getMessage());
+            return 0;
         }
-
     }
 }
