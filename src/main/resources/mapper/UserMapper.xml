@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="ink.linyang.dlut_eda_mcp.mapper.UserMapper">
+
+    <insert id="insertApiKey" parameterType="map">
+        INSERT INTO api_keys (username, api_key, balance, create_time, enable)
+        VALUES (#{username}, #{apiKey}, 114514, NOW(), TRUE);
+    </insert>
+
+    <select id="getAllApiKeys" resultType="ink.linyang.dlut_eda_mcp.entity.UserInfo">
+        SELECT username, api_key, balance, enable
+        FROM api_keys;
+    </select>
+    <select id="getApiKey" resultType="java.lang.Boolean">
+        SELECT count(*)
+        FROM api_keys
+        WHERE api_key = #{apiKey} and enable = TRUE;
+    </select>
+
+    <delete id="deleteApiKey">
+        DELETE FROM api_keys
+        WHERE api_key = #{apiKey};
+    </delete>
+
+</mapper>

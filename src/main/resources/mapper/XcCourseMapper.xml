@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="ink.linyang.dlut_eda_mcp.mapper.XcCourseMapper">
+    <select id="selectXcCourses" resultType="ink.linyang.dlut_eda_mcp.entity.XcCourse">
+        SELECT title, url, notice_time
+        FROM xc_courses
+        ORDER BY notice_time DESC
+    </select>
+
+    <insert id="insertXcCourses" parameterType="java.util.List">
+        INSERT INTO xc_courses (title, url, notice_time, create_time, update_time)
+        VALUES
+        <foreach collection="list" item="course" separator=",">
+            (#{course.title}, #{course.url}, #{course.noticeTime}, NOW(), NOW())
+        </foreach>
+        ON DUPLICATE KEY UPDATE
+        url = VALUES(url),
+        notice_time = VALUES(notice_time),
+        update_time = NOW()
+    </insert>
+</mapper>
