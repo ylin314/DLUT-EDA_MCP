@@ -3,6 +3,7 @@ package ink.linyang.dlut_eda_mcp.util;
 
 import jakarta.annotation.Resource;
 import org.redisson.api.RBucket;
+import org.redisson.api.RLock;
 import org.redisson.api.RSet;
 import org.redisson.api.RedissonClient;
 import org.springframework.stereotype.Component;
@@ -15,8 +16,9 @@ import java.util.concurrent.TimeUnit;
 public class RedisUtil {
     public static final String REDIS_KEY_PREFIX = "dlut-eda-mcp:"; // Redis key前缀
     public static final String XC_PREFIX = REDIS_KEY_PREFIX + "xc"; // 形策相关的Redis key前缀
+    public static final String XC_COURSE_LIST_LOCK_KEY_PREFIX = XC_PREFIX + ":lock"; // 形策开课清单的分布式锁的Redis key前缀
     public static final String XC_COURSE_LIST_PREFIX = XC_PREFIX + ":courseList"; // 形策开课清单的Redis key
-    public static final String User_API_KEY_PREFIX = REDIS_KEY_PREFIX + "user:apiKey"; // 用户
+    public static final String USER_API_KEY_PREFIX = REDIS_KEY_PREFIX + "user:apiKey"; // 用户
 
     @Resource
     private RedissonClient redissonClient;
@@ -73,5 +75,10 @@ public class RedisUtil {
     // 判断 key 是否存在
     public boolean exists(String key) {
         return redissonClient.getBucket(key).isExists();
+    }
+
+    // 获取锁对象
+    public RLock getLock(String key) {
+        return redissonClient.getLock(key);
     }
 }
