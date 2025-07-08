@@ -38,9 +38,11 @@ src/main/resources/.env
 ### Only Developer
 /src/main/java/ink/linyang/dlut_eda_mcp/controller
 /src/main/java/ink/linyang/dlut_eda_mcp/config/FilterConfig.java
+/src/main/java/ink/linyang/dlut_eda_mcp/config/WebMvcConfig.java
 /src/main/java/ink/linyang/dlut_eda_mcp/entity/ResponseEntity.java
 /src/main/java/ink/linyang/dlut_eda_mcp/entity/UserInfo.java
 /src/main/java/ink/linyang/dlut_eda_mcp/filter/
+/src/main/java/ink/linyang/dlut_eda_mcp/interceptor/
 /src/main/java/ink/linyang/dlut_eda_mcp/mapper/UserMapper.java
 /src/main/java/ink/linyang/dlut_eda_mcp/service/UserService.java
 /src/main/java/ink/linyang/dlut_eda_mcp/util/ApiKeyUtil.java

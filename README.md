@@ -13,11 +13,13 @@
 {
   "mcpServers": {
     "DLUT-EDA_MCP": {
-      "url": "https://mcp.linyang.ink/sse?key=<您向开发者申请的key>"
+      "url": "https://mcp.linyang.ink/sse"
     }
   }
 }
 ```
+
+之后您需要在请求头中加入 Authorization 字段，值为 `Bearer <token>`
 
 ## 产品特点
 
