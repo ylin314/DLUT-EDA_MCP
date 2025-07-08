@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 
 import java.util.List;
 
-@FeignClient(name = "SpiderFeignClient", url = "http://localhost:5555", configuration = FeignOkHttpConfig.class)
+@FeignClient(name = "SpiderFeignClient", url = "${feign.spi}", configuration = FeignOkHttpConfig.class)
 public interface SpiderFeign {
 
     @GetMapping("/xc_courses")
