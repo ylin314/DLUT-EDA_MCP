@@ -6,13 +6,16 @@ import ink.linyang.dlut_eda_mcp.mapper.XcCourseMapper;
 import ink.linyang.dlut_eda_mcp.task.SpiderTask;
 import ink.linyang.dlut_eda_mcp.util.RedisUtil;
 import jakarta.annotation.Resource;
+import org.redisson.api.RLock;
 import org.springframework.ai.tool.annotation.Tool;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.concurrent.TimeUnit;
 
 @Service
 public class XcService {
@@ -26,19 +29,29 @@ public class XcService {
 
     @Tool(description = "获取形势与政策开课通知清单, 返回json格式数据。形势与政策这门课又叫“形策”，json中给出的字段并没有真正的上课时间，notice_time是上课通知发送的时间。url是通知链接，title是通知标题。")
     public List<XcCourse> getXcCourses() {
-        List<XcCourse> courseList;
+        List<XcCourse> courseList = new ArrayList<>();
         // 从Redis中获取形策开课清单
         if (redisUtil.exists(RedisUtil.XC_COURSE_LIST_PREFIX)) {
             // 如果存在，则直接从缓存中获取
             String courseListStr = redisUtil.getString(RedisUtil.XC_COURSE_LIST_PREFIX);
             courseList = JSONUtil.toList(JSONUtil.parseArray(courseListStr), XcCourse.class);
         } else {
-            // 如果不存在，则从数据库中查询
-            courseList = xcCourseMapper.selectXcCourses();
-            // 缓存到Redis
-            // 设置60s到180s的随机ttl
-            int ttlSeconds = ThreadLocalRandom.current().nextInt(60, 181);
-            redisUtil.setString(RedisUtil.XC_COURSE_LIST_PREFIX, JSONUtil.toJsonStr(courseList), ttlSeconds);
+            RLock lock = redisUtil.getLock(RedisUtil.XC_COURSE_LIST_LOCK_KEY_PREFIX + ":" + Thread.currentThread().getName());
+            try {
+                boolean isLocked = lock.tryLock(3, TimeUnit.SECONDS);
+                if (isLocked) {
+                    // 如果不存在，则从数据库中查询
+                    courseList = xcCourseMapper.selectXcCourses();
+                    // 缓存到Redis
+                    // 设置60s到180s的随机ttl
+                    int ttlSeconds = ThreadLocalRandom.current().nextInt(60, 181);
+                    redisUtil.setString(RedisUtil.XC_COURSE_LIST_PREFIX, JSONUtil.toJsonStr(courseList), ttlSeconds);
+                }
+            } catch (InterruptedException e) {
+                throw new RuntimeException("获取分布式锁失败，无法获取形策开课清单", e);
+            } finally {
+                lock.unlock();
+            }
         }
         // 格式化日期
         for (XcCourse course : courseList) {
