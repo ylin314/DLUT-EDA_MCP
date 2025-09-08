@@ -2,7 +2,7 @@ server:
   port: 8081
 spring:
   profiles:
-    active: dev
+    active: prod
   application:
     name: dlut-eda-mcp
   main:
